@@ -1,58 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Live Editable Page</title>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        #content {
-            height: 100%;
-            box-sizing: border-box;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: rgba(255,255,255,0.9);
-            text-align: center;
-            padding: 5px 0;
-        }
-    </style>
+  <title>anyone can edit this page</title>
+  <style>
+    html, body { height: 100%; margin: 0; font-family: Arial; }
+    #content { height: 100%; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+    .footer { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.9); text-align: center; padding: 5px 0; }
+  </style>
 </head>
 <body>
 
-<!-- Full-page editable content -->
 <div id="content">Loading...</div>
 
-<!-- Footer link is always outside editable area -->
 <div class="footer">
-    <a href="editor.html">Edit this page</a>
+  <a href="editor.html">Edit this page</a>
 </div>
 
 <script>
-const WORKER_URL = "https://shrill-lab-429b.thebigbugatti24-8a8.workers.dev";
+const WORKER_URL = "https://YOUR_WORKER_URL_HERE";
 
 async function load() {
-    try {
-        const res = await fetch(WORKER_URL);
-        const data = await res.json();
-        document.getElementById("content").innerHTML = data.html;
-    } catch (err) {
-        document.getElementById("content").innerHTML = "<p>Error loading content</p>";
-        console.error(err);
-    }
+  try {
+    const res = await fetch(WORKER_URL);
+    const data = await res.json();
+    document.getElementById("content").innerHTML = data.html;
+  } catch (err) {
+    document.getElementById("content").innerHTML = "<p>Error loading content</p>";
+    console.error(err);
+  }
 }
 
-// Load immediately
+// Initial load
 load();
-
-// Optional: refresh every 3 seconds for live preview
+// Optional: refresh every 3 seconds
 setInterval(load, 3000);
 </script>
 
