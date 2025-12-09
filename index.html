@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>anyone can edit this page!</title>
+    <title>anyone can edit this page</title>
     <style>
         body { font-family: Arial; max-width: 800px; margin: auto; padding: 20px; }
+        #content { padding: 20px; border: 2px solid #222; border-radius: 10px; min-height: 300px; }
         .footer { margin-top: 30px; text-align: center; }
     </style>
 </head>
 <body>
+
 <div id="content">Loading...</div>
 
 <div class="footer">
@@ -15,18 +17,20 @@
 </div>
 
 <script>
+const WORKER_URL = "https://shrill-lab-429b.thebigbugatti24-8a8.workers.dev";
+
 async function load() {
-    const res = await fetch("/api/save");
+    const res = await fetch(`${WORKER_URL}/?read=1`);
     const data = await res.json();
     document.getElementById("content").innerHTML = data.html;
 }
 
+// Load immediately
 load();
-// Live refresh every 3 seconds
+
+// Refresh every 3 seconds for live updates
 setInterval(load, 3000);
 </script>
 
 </body>
 </html>
-
-
