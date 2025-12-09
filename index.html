@@ -3,9 +3,24 @@
 <head>
     <title>anyone can edit this page</title>
     <style>
-        body { font-family: Arial; max-width: 800px; margin: auto; padding: 20px; }
-        #content { padding: 20px; border: 2px solid #222; border-radius: 10px; min-height: 300px; }
-        .footer { margin-top: 30px; text-align: center; }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #content {
+            padding: 20px;
+            min-height: 100%;
+            box-sizing: border-box;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.9);
+            text-align: center;
+            padding: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -20,15 +35,20 @@
 const WORKER_URL = "https://shrill-lab-429b.thebigbugatti24-8a8.workers.dev";
 
 async function load() {
-    const res = await fetch(`${WORKER_URL}/?read=1`);
-    const data = await res.json();
-    document.getElementById("content").innerHTML = data.html;
+    try {
+        const res = await fetch(WORKER_URL);
+        const data = await res.json();
+        document.getElementById("content").innerHTML = data.html;
+    } catch (err) {
+        document.getElementById("content").innerHTML = "<p>Error loading content.</p>";
+        console.error(err);
+    }
 }
 
-// Load immediately
+// Load initially
 load();
 
-// Refresh every 3 seconds for live updates
+// Refresh every 3 seconds
 setInterval(load, 3000);
 </script>
 
