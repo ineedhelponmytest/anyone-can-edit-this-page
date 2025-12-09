@@ -43,13 +43,16 @@ async function save() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ html })
         });
+
         if (res.ok) {
             document.getElementById("status").textContent = "Saved ✓";
         } else {
-            document.getElementById("status").textContent = "Error saving!";
+            const errText = await res.text();
+            document.getElementById("status").textContent = "Error saving! " + errText;
+            console.error(errText);
         }
     } catch (err) {
-        document.getElementById("status").textContent = "Error saving!";
+        document.getElementById("status").textContent = "Error saving! " + err.message;
         console.error(err);
     }
 }
@@ -62,3 +65,4 @@ load();
 
 </body>
 </html>
+
