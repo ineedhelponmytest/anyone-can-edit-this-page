@@ -1,68 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HTML Editor</title>
-    <style>
-        body { font-family: Arial; max-width: 1000px; margin: auto; padding: 20px; }
-        #editor { width: 100%; height: 70vh; font-family: monospace; font-size: 14px; }
-        .status { margin-top: 10px; font-size: 14px; color: #888; }
-        button { margin-top: 10px; padding: 5px 10px; font-size: 14px; }
-    </style>
+  <title>HTML Editor</title>
+  <style>
+    body { font-family: Arial; max-width: 1000px; margin: auto; padding: 20px; }
+    #editor { width: 100%; height: 70vh; font-family: monospace; font-size: 14px; }
+    .status { margin-top: 10px; font-size: 14px; color: #888; }
+    button { margin-top: 10px; padding: 5px 10px; font-size: 14px; }
+  </style>
 </head>
 <body>
 
 <h2>HTML Editor</h2>
-
 <textarea id="editor"></textarea>
 <div class="status" id="status">Changes not saved</div>
 <button id="saveBtn">Save</button>
 <a href="index.html">Back to public page</a>
 
 <script>
-const WORKER_URL = "https://shrill-lab-429b.thebigbugatti24-8a8.workers.dev";
+const WORKER_URL = "https://YOUR_WORKER_URL_HERE";
 
 // Load existing content
 async function load() {
-    try {
-        const res = await fetch(WORKER_URL);
-        const data = await res.json();
-        document.getElementById("editor").value = data.html;
-    } catch (err) {
-        document.getElementById("status").textContent = "Error loading content";
-        console.error(err);
-    }
+  try {
+    const res = await fetch(WORKER_URL);
+    const data = await res.json();
+    document.getElementById("editor").value = data.html;
+  } catch (err) {
+    document.getElementById("status").textContent = "Error loading content";
+    console.error(err);
+  }
 }
 
-// Save content manually
+// Manual save
 async function save() {
-    const html = document.getElementById("editor").value;
-
-    try {
-        const res = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ html })
-        });
-
-        if (res.ok) {
-            document.getElementById("status").textContent = "Saved ✓";
-        } else {
-            const errText = await res.text();
-            document.getElementById("status").textContent = "Error saving! " + errText;
-            console.error(errText);
-        }
-    } catch (err) {
-        document.getElementById("status").textContent = "Error saving! " + err.message;
-        console.error(err);
+  const html = document.getElementById("editor").value;
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ html })
+    });
+    if (res.ok) {
+      document.getElementById("status").textContent = "Saved ✓";
+    } else {
+      document.getElementById("status").textContent = "Error saving!";
+      console.error(await res.text());
     }
+  } catch (err) {
+    document.getElementById("status").textContent = "Error saving!";
+    console.error(err);
+  }
 }
 
 document.getElementById("saveBtn").addEventListener("click", save);
 
-// Initial load
+// Load content initially
 load();
 </script>
 
 </body>
 </html>
-
