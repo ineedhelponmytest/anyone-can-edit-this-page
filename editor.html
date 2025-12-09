@@ -1,23 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Editor</title>
+    <title>HTML Editor</title>
     <style>
-        body { font-family: Arial; max-width: 800px; margin: auto; padding: 20px; }
-        #editor {
-            padding: 20px;
-            border: 2px solid #222;
-            border-radius: 10px;
-            min-height: 300px;
-        }
+        body { font-family: Arial; max-width: 1000px; margin: auto; padding: 20px; }
+        #editor { width: 100%; height: 70vh; font-family: monospace; font-size: 14px; }
         .status { margin-top: 10px; font-size: 14px; color: #888; }
+        button { margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<h2>Editor</h2>
+<h2>HTML Editor</h2>
 
-<div id="editor" contenteditable="true">Loading...</div>
+<textarea id="editor"></textarea>
 <div class="status" id="status">Not saved yet...</div>
 
 <a href="index.html">Back to public page</a>
@@ -27,34 +23,44 @@ const WORKER_URL = "https://shrill-lab-429b.thebigbugatti24-8a8.workers.dev";
 let timeout = null;
 
 async function load() {
-    const res = await fetch(`${WORKER_URL}/?read=1`);
-    const data = await res.json();
-    document.getElementById("editor").innerHTML = data.html;
-}
-
-async function autosave() {
-    const html = document.getElementById("editor").innerHTML;
-
-    const res = await fetch(WORKER_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ html })
-    });
-
-    if (res.ok) {
-        document.getElementById("status").textContent = "Saved ✓";
-    } else {
-        document.getElementById("status").textContent = "Error saving!";
+    try {
+        const res = await fetch(WORKER_URL);
+        const data = await res.json();
+        document.getElementById("editor").value = data.html;
+    } catch (err) {
+        document.getElementById("status").textContent = "Error loading content";
+        console.error(err);
     }
 }
 
+async function autosave() {
+    const html = document.getElementById("editor").value;
+
+    try {
+        const res = await fetch(WORKER_URL, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ html })
+        });
+        if (res.ok) {
+            document.getElementById("status").textContent = "Saved ✓";
+        } else {
+            document.getElementById("status").textContent = "Error saving!";
+        }
+    } catch (err) {
+        document.getElementById("status").textContent = "Error saving!";
+        console.error(err);
+    }
+}
+
+// Auto-save 1s after typing stops
 document.getElementById("editor").addEventListener("input", () => {
     document.getElementById("status").textContent = "Saving...";
     clearTimeout(timeout);
-    timeout = setTimeout(autosave, 1000); // save after 1s of no typing
+    timeout = setTimeout(autosave, 1000);
 });
 
-// Load content immediately
+// Load content
 load();
 </script>
 
