@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editor</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: auto; padding: 20px; }
+        #editor {
+            border: 2px solid #222;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 300px;
+        }
+        .status { margin-top: 10px; color: #888; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<h2>Editor</h2>
+<div id="editor" contenteditable="true">Loading...</div>
+
+<div class="status" id="status">Not saved yet...</div>
+
+<a href="index.html">Back to public page</a>
+
+<script>
+let timeout = null;
+
+async function load() {
+    const res = await fetch("/api/save");
+    const data = await res.json();
+    document.getElementById("editor").innerHTML = data.html;
+}
+
+async function autosave() {
+    const html = document.getElementById("editor").innerHTML;
+
+    const res = await fetch("/api/save", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ html })
+    });
+
+    if (res.ok) {
+        document.getElementById("status").textContent = "Saved ✓";
+    } else {
+        document.getElementById("status").textContent = "Error saving!";
+    }
+}
+
+document.getElementById("editor").addEventListener("input", () => {
+    document.getElementById("status").textContent = "Saving...";
+    clearTimeout(timeout);
+    timeout = setTimeout(autosave, 1000); // 1s idle → save
+});
+
+load();
+</script>
+
+</body>
+</html>

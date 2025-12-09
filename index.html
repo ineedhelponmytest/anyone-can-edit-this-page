@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>anyone can edit this page!</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: auto; padding: 20px; }
+        #content { border: 2px solid #222; padding: 20px; border-radius: 10px; min-height: 300px; }
+        .footer { margin-top: 30px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<h2>Live Public Page</h2>
+<div id="content">Loading...</div>
+
+<div class="footer">
+    <a href="editor.html">Edit this page</a>
+</div>
+
+<script>
+async function load() {
+    const res = await fetch("/api/save");
+    const data = await res.json();
+    document.getElementById("content").innerHTML = data.html;
+}
+
+load();
+// Live refresh every 3 seconds
+setInterval(load, 3000);
+</script>
+
+</body>
+</html>
