@@ -6,7 +6,7 @@
         body { font-family: Arial; max-width: 1000px; margin: auto; padding: 20px; }
         #editor { width: 100%; height: 70vh; font-family: monospace; font-size: 14px; }
         .status { margin-top: 10px; font-size: 14px; color: #888; }
-        button { margin-top: 10px; }
+        button { margin-top: 10px; padding: 5px 10px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -14,14 +14,14 @@
 <h2>HTML Editor</h2>
 
 <textarea id="editor"></textarea>
-<div class="status" id="status">Not saved yet...</div>
-
+<div class="status" id="status">Changes not saved</div>
+<button id="saveBtn">Save</button>
 <a href="index.html">Back to public page</a>
 
 <script>
 const WORKER_URL = "https://shrill-lab-429b.thebigbugatti24-8a8.workers.dev";
-let timeout = null;
 
+// Load existing content
 async function load() {
     try {
         const res = await fetch(WORKER_URL);
@@ -33,13 +33,14 @@ async function load() {
     }
 }
 
-async function autosave() {
+// Save content manually
+async function save() {
     const html = document.getElementById("editor").value;
 
     try {
         const res = await fetch(WORKER_URL, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ html })
         });
         if (res.ok) {
@@ -53,14 +54,9 @@ async function autosave() {
     }
 }
 
-// Auto-save 1s after typing stops
-document.getElementById("editor").addEventListener("input", () => {
-    document.getElementById("status").textContent = "Saving...";
-    clearTimeout(timeout);
-    timeout = setTimeout(autosave, 1000);
-});
+document.getElementById("saveBtn").addEventListener("click", save);
 
-// Load content
+// Initial load
 load();
 </script>
 
